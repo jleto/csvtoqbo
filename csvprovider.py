@@ -1,24 +1,42 @@
-#provider.py
-#Hides provider-specific details for the main csvtoqbo method.
+#####################################################################
+#																	#
+#	File: csvprovider.py											#
+#	Developer: Justin Leto											#
+#																	#
+#	csvprovider class hides provider-specific details from main		#
+#	csvtoqbo method.												#
+#																	#
+#	Usage: Called from csvtoqbo.py									#
+#																	#
+#####################################################################
 
 class csvprovider:
 
+	#	Unique identifier of provider
 	__id = ''
 
+	#	constructor
 	def __init__(self, providername):
 		if providername in ('amazon'):
 			self.__id = providername
 		else:
 			raise Exception("Provider '%s' not supported." % providername)
 
+	#	public getter for ID
 	def getID(self):
 		return self.__id
 		
+	#	public getter for common name of provider
 	def getName(self):
 		if self.__id == 'amazon':
 			return 'Amazon Payments'
 		else:
 			raise Exception("Provider '%s' not supported." % self.name)
+
+
+	#	STATIC METHODS to extract values from adding QBO transaction
+	#	from CSV row depending on type of provider
+	#
 
 	@staticmethod
 	def getStatus(self,row):
