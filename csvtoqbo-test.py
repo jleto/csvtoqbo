@@ -14,7 +14,8 @@ import os
 import unittest
 import qbo
 import qboconst
-import csvprovider
+import amazonpayments
+import cStringIO
 from datetime import date
 
 class csvtoqboTest(unittest.TestCase):
@@ -81,21 +82,15 @@ class csvtoqboTest(unittest.TestCase):
 		statinfo = os.stat('./csvtoqbo-test.qbo')
 		self.assertEquals(statinfo.st_size, 1281)
 
-	#	Provider class initialization failure due to unknown provider
-	def testUnknownProvider(self):
-		try:		
-			self.assertRaises(Exception, provider.provider('not-amazon'))
-		except:
-			pass
-
 	#	Provider ID is set correctly on intialization
 	def testProviderID(self):
-		myProvider = csvprovider.csvprovider('amazon')
+		myProvider = amazonpayments.amazonpayments()
 		self.assertEquals(myProvider.getID(), 'amazon')
+		self.assertEquals(myProvider.getName(), 'Amazon Payments')
 		
 	#	QBO class get functions for transaction method
 	def testProviderGetters(self):
-		myProvider = csvprovider.csvprovider('amazon')
+		myProvider = amazonpayments.amazonpayments()
 		myDict = {'Status' : 'Completed',
 						'Date' : 'May 8, 2013',
 						'Type' : 'Payment',
@@ -109,6 +104,27 @@ class csvtoqboTest(unittest.TestCase):
 		self.assertEquals(myProvider.getTxnAmount(myProvider, myDict), '1.00')
 		self.assertEquals(myProvider.getTxnName(myProvider, myDict), 'TestBuy')
 
+	#	Test against command line with sample amazon test csv file
+	def testCommandLineSampleCSVFile(self):
+
+		name = 'Amazon-CSV-Test'
+		csvname = name + '.csv'
+		logname = name + '.log'
+		try:
+			with open(logname): 
+				os.remove(logname)
+		except IOError:
+		   pass
+
+		os.system('python csvtoqbo.py -amazon %s' % csvname)
+		assert os.path.exists(logname)
+		
+		with open(logname) as f:
+			content = f.readlines()
+			if not "written successfully" in content[len(content)-1]:
+				print(content)
+				self.assertEquals(True, False)
+				
 # main method for running unit tests
 if __name__ == '__main__':
     unittest.main()

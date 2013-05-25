@@ -2,13 +2,7 @@
 
 from abstractprovider import AbstractProvider
 
-class csvprovider:
-	__metaclass__ = AbstractProvider
-
-	amazonpayments.register(tuple)
-
-	assert issubclass(tuble, amazonpayments)
-	assert isinstance((), amazonpayments)
+class amazonpayments(AbstractProvider):
 
 	__providerID = ''
 	__providerName = ''

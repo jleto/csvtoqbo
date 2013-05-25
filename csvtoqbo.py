@@ -16,7 +16,7 @@ import os
 import logging
 import csv
 import qbo
-import csvprovider
+import amazonpayments
 
 #	If only utility script is called
 if len(sys.argv) <= 1:
@@ -32,13 +32,18 @@ elif (sys.argv[1] == '--help'):
 #	Test for valid options, instantiate appropiate provider object
 if sys.argv[1] == '-amazon':
 	myProvider = None
-	myProvider = csvprovider.csvprovider('amazon')
+	myProvider = amazonpayments.amazonpayments()
 
 #	For each CSV file listed for conversion
 for arg in sys.argv:
 	if sys.argv.index(arg) >  1:
 		
-		os.remove(arg[:len(arg)-3] + 'log')
+		try:
+			with open(arg[:len(arg)-3] + 'log'): 
+				os.remove(arg[:len(arg)-3] + 'log')
+		except IOError:
+		   pass
+
 		logging.basicConfig(filename=arg[:len(arg)-3] + 'log', level=logging.INFO)
 		logging.info("Opening '%s' CSV File" % myProvider.getName())
 
