@@ -5,7 +5,7 @@ Python tool to convert CSV files generated from multiple providers to QBO format
 
 Usage:
 
-python <options> <csvfiles>
+python \<options\> \<csvfiles\>
 
 Example:
 
