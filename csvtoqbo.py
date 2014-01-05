@@ -70,19 +70,27 @@ for arg in sys.argv:
 					txn_amount = myProvider.getTxnAmount(myProvider,row)
 					name = myProvider.getTxnName(myProvider,row)
 
-					#Add transaction to the qbo document
-					if myQbo.addTransaction(status, date_posted, txn_type, to_from_flag, txn_amount, name):
-						print('Transaction [' + str(txnCount) + '] added successfully!')
-						logging.info('Transaction [' + str(txnCount) + '] added successfully!')				
+					try:
+                                                #Add transaction to the qbo document
+                                                if myQbo.addTransaction(status, date_posted, txn_type, to_from_flag, txn_amount, name):
+                                                        print('Transaction [' + str(txnCount) + '] added successfully!')
+                                                        logging.info('Transaction [' + str(txnCount) + '] added successfully!')				
+
+					except:
+                                                #Error adding transaction			
+                                                exc_type, exc_value, exc_traceback = sys.exc_info()
+                                                lines = traceback.format_exception(exc_type, exc_value, exc_traceback)
+                                                print(''.join('!! ' + line for line in lines))
+                                                logging.info("Transaction [" + str(txnCount) + "] excluded!")
+                                                logging.info('>> Data: ' + str(sdata))
+                                                pass
 
 		except:
-			#Error adding transaction			
-			exc_type, exc_value, exc_traceback = sys.exc_info()
-			lines = traceback.format_exception(exc_type, exc_value, exc_traceback)
-			print ''.join('!! ' + line for line in lines)
-			logging.info("Transaction [" + str(txnCount) + "] excluded!")
-			logging.info('>> Data: ' + str(sdata))
-
+                        exc_type, exc_value, exc_traceback = sys.exc_info()
+                        lines = traceback.format_exception(exc_type, exc_value, exc_traceback)
+                        print(''.join('!! ' + line for line in lines))
+                        logging.info("Trouble reading CSV file!")
+                        
 		# After transactions have been read, write full QBO document to file 
 		try:
 			filename = arg[:len(arg)-3] + 'qbo'
@@ -95,5 +103,5 @@ for arg in sys.argv:
 			#IO Error			
 			exc_type, exc_value, exc_traceback = sys.exc_info()
 			lines = traceback.format_exception(exc_type, exc_value, exc_traceback)
-			print ''.join('!! ' + line for line in lines)
+			print(''.join('!! ' + line for line in lines))
 			logging.info(''.join('!! ' + line for line in lines))

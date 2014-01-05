@@ -73,25 +73,25 @@ class qbo:
 	#	method to validate paramters used to submit transactions
 	def validateTransaction(self, status, date_posted, txn_type, to_from_flag, txn_amount, name):
 
-		if status != 'Completed':
+		if str.lower(status) != 'completed':
 			#log status failure
 			logging.info("Transaction status [" + status + "] invalid.")
 			raise Exception("Transaction status [" + status + "] invalid.")
 
-		if type(datetime.strptime(str(date_posted), '%b %d, %Y')) is not datetime:
-			logging.info("Transaction posted date [" + date_posted + "] invalid.")
-			raise Exception("Transaction posted date [" + date_posted + "] invalid.")
+		#if type(datetime.strptime(str(date_posted), '%m/%d/%Y')) is not datetime:
+		#	logging.info("Transaction posted date [" + date_posted + "] invalid.")
+		#	raise Exception("Transaction posted date [" + date_posted + "] invalid.")
 
-		if str(txn_type) not in ('Payment','Refund','Withdrawal'):
-			logging.info("Transaction type [" + str(txn_type) + "] not 'Payment', 'Refund', or 'Withdrawal'.")
-			raise Exception("Transaction type [" + str(txn_type) + "] not 'Payment', 'Refund', or 'Withdrawal'.")
+		if str.lower(txn_type) not in ('payment','refund','withdrawal', 'withdraw funds'):
+			logging.info("Transaction type [" + str(txn_type) + "] not 'Payment', 'Refund', 'Withdraw Funds', or 'Withdrawal'.")
+			raise Exception("Transaction type [" + str(txn_type) + "] not 'Payment', 'Refund', 'Withdraw Funds', or 'Withdrawal'.")
 
-		if to_from_flag not in ('To', 'From'):
+		if str.lower(to_from_flag) not in ('to', 'from'):
 			logging.info("Transaction 'To/From' field [" + to_from_flag + "] invalid.")
 			raise Exception("Transaction 'To/From' field [" + to_from_flag + "] invalid.")
 
 		#logical test of txn_type and to_from_flag
-		if ((txn_type == 'Refund' and to_from_flag != 'To') or (txn_type == 'Payment' and to_from_flag != 'From')):
+		if ((str.lower(txn_type) == 'refund' and str.lower(to_from_flag) != 'to') or (str.lower(txn_type) == 'payment' and str.lower(to_from_flag) != 'from')):
 			logging.info("Transaction type inconsistent with 'To/From' field.")
 			raise Exception("Transaction type inconsistent with 'To/From' field.")
 
@@ -109,27 +109,39 @@ class qbo:
 			#	Validating param values prior to committing transaction
 			self.validateTransaction(status, date_posted, txn_type, to_from_flag, txn_amount, name)
 		except:
-			exc_type, exc_value, exc_traceback = sys.exc_info()
-			lines = traceback.format_exception(exc_type, exc_value, exc_traceback)
-			print ''.join('!! ' + line for line in lines)
-			logging.info(''.join('!! ' + line for line in lines))
 			raise Exception
 
 		#	Construct QBO formatted transaction
 		transaction = ""
 
-		rec_date = datetime.strptime(str(date_posted), '%b %d, %Y')
+		day = ""
+		month = ""
+		date_array = date_posted.split('/')
+		day = date_array[0]
+		month = date_array[1]
+		if len(day) == 1:
+			day = "0"+day
+		if len(month) ==1:
+			month = "0"+month
+			
+		rec_date = datetime.strptime(day+"/"+month+"/"+date_array[2], '%m/%d/%Y')
 		rec_date = rec_date.strftime('%Y%m%d%H%M%S') + '.000[-5]'
 
 		dtposted = '<DTPOSTED>' + rec_date
 		memo = '<MEMO>' + str(txn_type)
 
-		if str(txn_type) == 'Payment':
+		if str.lower(txn_type) == 'payment':
 			trtype = '<TRNTYPE>CREDIT'
-		elif (str(txn_type) == 'Refund' and str(to_from_flag) == 'To') or (str(txn_type) == 'Withdrawal'):
+		elif (str.lower(txn_type) == 'refund' and str.lower(to_from_flag) == 'to') or (str.lower(txn_type) in ('withdrawal','withdraw funds')):
 			trtype = '<TRNTYPE>DEBIT'
 
+		#if str.lower(txn_type) == 'refund':
+		#	tramt = '<TRNAMT>-' + str(txn_amount).replace('$','')
+		#else:
+		#	tramt = '<TRNAMT>' + str(txn_amount).replace('$','')
+		
 		tramt = '<TRNAMT>' + str(txn_amount).replace('$','')
+                
 		trname = '<NAME>' + str(name)
 		fitid = '<FITID>' + rec_date + str(1000+len(self.__transactions))[1:]
 
@@ -198,6 +210,6 @@ class qbo:
 			#log io error return False
 			exc_type, exc_value, exc_traceback = sys.exc_info()
 			lines = traceback.format_exception(exc_type, exc_value, exc_traceback)
-			print ''.join('!! ' + line for line in lines)
+			print(''.join('!! ' + line for line in lines))
 			logging.info('qbo.Write() method: '.join('!! ' + line for line in lines))
 			return False

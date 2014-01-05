@@ -30,7 +30,7 @@ HEADER = ("OFXHEADER:100\n"
 		"<SEVERITY>INFO\n"
 		"<MESSAGE>OK\n"
 		"</STATUS>\n"
-		"<DTSERVER>" + DATE_TODAY + ".000[-5]\n"
+		"<DTSERVER>" + DATE_TODAY + "\n"
 		"<LANGUAGE>ENG\n"
 		"<INTU.BID>3000\n"
 		"</SONRS>\n"
@@ -53,20 +53,20 @@ HEADER = ("OFXHEADER:100\n"
 
 FOOTER = ("<LEDGERBAL>\n"
 		"<BALAMT>0.00\n"
-		"<DTASOF>" + DATE_TODAY + ".000[-5]\n"
+		"<DTASOF>" + DATE_TODAY + "\n"
 		"</LEDGERBAL>\n"
 		"<AVAILBAL>\n"
 		"<BALAMT>0.00\n"
-		"<DTASOF>" +  DATE_TODAY + ".000[-5]\n"
+		"<DTASOF>" +  DATE_TODAY + "\n"
 		"</AVAILBAL>\n"
 		"</STMTRS>\n"
 		"</STMTTRNRS>\n"
 		"</BANKMSGSRSV1>\n"
 		"</OFX>\n")
 
-DATE_START = "<DTSTART>" +  DATE_TODAY + ".000[-5]\n"
+DATE_START = "<DTSTART>" +  DATE_TODAY + "\n"
 
-DATE_END = "<DTEND>" +  DATE_TODAY + ".000[-5]\n"
+DATE_END = "<DTEND>" +  DATE_TODAY + "\n"
 
 BANKTRANLIST_START = "<BANKTRANLIST>\n"
 
