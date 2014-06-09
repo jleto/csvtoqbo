@@ -135,12 +135,12 @@ class qbo:
 		elif (str.lower(txn_type) == 'refund' and str.lower(to_from_flag) == 'to') or (str.lower(txn_type) in ('withdrawal','withdraw funds')):
 			trtype = '<TRNTYPE>DEBIT'
 
-		#if str.lower(txn_type) == 'refund':
-		#	tramt = '<TRNAMT>-' + str(txn_amount).replace('$','')
-		#else:
-		#	tramt = '<TRNAMT>' + str(txn_amount).replace('$','')
+		if str.lower(txn_type) in ('refund', 'withdrawal', 'withdraw funds'):
+			tramt = '<TRNAMT>-' + str(txn_amount).replace('$','')
+		else:
+			tramt = '<TRNAMT>' + str(txn_amount).replace('$','')
 		
-		tramt = '<TRNAMT>' + str(txn_amount).replace('$','')
+		#tramt = '<TRNAMT>' + str(txn_amount).replace('$','')
                 
 		trname = '<NAME>' + str(name)
 		fitid = '<FITID>' + rec_date + str(1000+len(self.__transactions))[1:]
